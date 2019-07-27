@@ -73,3 +73,9 @@ kubectl get cs
 
 ![kubectl config view](https://i.ibb.co/jJdH0s5/Screenshot-from-2019-07-22-00-59-38.png)
 
+## Домашнее задание №2 (занятие 5)
+
+###  что выполнено:
+1. task01
+* создали SA bob с ролью admin в рамках кластера
+* создали SA dave без доступа к кластеру

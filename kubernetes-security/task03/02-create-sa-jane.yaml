@@ -1,0 +1,6 @@
+---
+apiversion: v1
+kind: ServiceAccount
+metadata:
+  name: jane
+  namespace: dev
