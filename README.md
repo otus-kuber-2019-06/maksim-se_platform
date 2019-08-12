@@ -75,7 +75,32 @@ kubectl get cs
 
 ## Домашнее задание №2 (занятие 5)
 
-###  что выполнено:
-1. task01
-* создали SA bob с ролью admin в рамках кластера
-* создали SA dave без доступа к кластеру
+### Выполнено ДЗ №2
+
+- [X] Основное ДЗ
+
+###  В процессе выполнено:
+ - task01
+   - создали SA bob с ролью admin в рамках кластера
+   - создали SA dave без доступа к кластеру
+ - task02
+   - создан namespace `prometheus`
+   - создан ServiceAccount `carol` с доступом в `prometheus`
+   - создан ClusterRole `prom-monitor` c доступом [ 'get', 'list', 'watch' ]
+   - ClusterRole `prom-monitor` выдана для всех ServiceAccount в `prometheus`
+ - task03
+   - создан namespace `dev`
+   - создан ServiceAccount `jane` с доступом в `dev`
+   - ClusterRole `admin` для `dev` выдана `jane`
+   - создан ServiceAccount `ken` с доступом в `dev`
+   - CLusterRole `view-ken` выдана `ken`
+
+### Как запустить проект:
+ - В корне проекта выполнить `kubectl apply -f kubernetes-security --recursive`
+
+### PR checklist:
+ - [X] Выставлен label с номером домашнего задания
+ - [X] Лектор добавлен в Assignees
+
+
+

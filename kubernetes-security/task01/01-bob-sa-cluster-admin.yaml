@@ -16,3 +16,4 @@ subjects:
 - kind: ServiceAccount
   name: bob
   namespace: kube-system
+
