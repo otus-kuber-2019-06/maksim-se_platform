@@ -8,6 +8,7 @@ roleRef:
   kind: ClusterRole
   name: view
 subjects:
-- kind: ServiceAccount
+- apiGroup: ''
+  kind: ServiceAccount
   name: ken
   namespace: dev
