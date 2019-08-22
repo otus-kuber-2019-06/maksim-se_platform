@@ -1,14 +1,14 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
-  name: admin-jane
+  name: jane-admin
   namespace: dev
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: admin
 subjects:
-- apiGroup: ''
-  kind: ServiceAccount
+- kind: ServiceAccount
   name: jane
   namespace: dev
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
