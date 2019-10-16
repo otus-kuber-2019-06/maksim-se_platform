@@ -117,3 +117,14 @@ kubectl get cs
  - создан манифест для Headless-сервиса web-svc-headless.yaml;
  - Создан манифест Ingress web-ingress.yaml для доступа к подам через Headless-сервис.
  - прокинут kubernetes-dashboard через MetalLB, задание со *
+
+## Домашнее задание №4
+
+### Выполнено ДЗ №4
+ - развернут Minio (StatefulSet)
+ - развернут service для доступа к Minio
+ - проверена работа Minio
+ 
+ ### задание со *
+ - в файле minio-super-secrets.yaml описаны учетные данные.
+ - данные записаны в minio-statefulset.yaml в секции env
