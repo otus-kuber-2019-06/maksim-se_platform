@@ -127,5 +127,4 @@ kubectl get cs
  
  ### задание со *
  - в файле minio-super-secrets.yaml описаны учетные данные.
- - доступы кодированы в base64
- - кодированные данные записаны в minio-statefulset.yaml в секции env
+ - данные записаны в minio-statefulset.yaml в секции env
