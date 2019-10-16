@@ -102,5 +102,19 @@ kubectl get cs
  - [X] Выставлен label с номером домашнего задания
  - [X] Лектор добавлен в Assignees
 
+## Домашнее задание №2
 
-
+### Выполнено ДЗ №2
+ - добавлены readinessProbe и livenessProbe в манифест kubernetes-intro/web-pod.yml 
+ - создан манифест deployment web-deploy.yaml для пода kubernetes-intro/web-pod.yml 
+ - добавил стратегию обновления
+ - добавлен манифест Service с ClusterIP web-svc-cip.yaml
+ - включен ipvs для kube-proxy
+ - установлен MetalLB, выполнил настройку с помощью ConfigMap metallb-config.yaml
+ - настроен маршрут в кластер kubernetes, проверил доступность веб-сервера в браузере;
+ - прокинут DNS через MetalLB, задание со *
+ - установил и настроил ingress-nginx;
+ - создан манифест для Headless-сервиса web-svc-headless.yaml;
+ - Создан манифест Ingress web-ingress.yaml для доступа к подам через Headless-сервис.
+ - прокинут kubernetes-dashboard через MetalLB, задание со *
+ 
