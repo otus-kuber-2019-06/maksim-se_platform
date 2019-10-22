@@ -128,3 +128,33 @@ kubectl get cs
  ### задание со *
  - в файле minio-super-secrets.yaml описаны учетные данные.
  - данные записаны в minio-statefulset.yaml в секции env
+
+## Домашнее задание №5
+
+### Выполнено ДЗ №5
+ - создан кластер с поддержкой snapshots
+ ```bash
+ kind create cluster --config cluster/cluster.yml --wait 300s
+ ```
+ - установлен CSI-драйвер
+ ```bash
+ git clone https://github.com/kubernetes-csi/csi-driver-host-path.git
+
+./csi-driver-host-path/deploy/kubernetes-1.15/deploy-hostpath.sh
+ ```
+  - cоздан StorageClass, pvc и pod
+```bash
+kubectl apply -f 01-csi-strg-class.yml
+
+kubectl apply -f 02-csi-pvc.yml
+
+kubectl apply -f 03-csi-pod-with-pv.yml
+```
+ - проверка результата:
+```bash
+kubectl get pvc
+
+kubectl get pv
+
+kubectl get pods
+```
