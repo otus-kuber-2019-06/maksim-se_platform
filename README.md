@@ -158,3 +158,29 @@ kubectl get pv
 
 kubectl get pods
 ```
+## Домашнее задание №6
+
+### kubectl debug
+ - Установил kubectl-debug по инструкции
+ - Попробовал выполнить трассировку
+ ```bash 
+bash-5.0# strace -c -p1
+strace: test_ptrace_get_syscall_info: PTRACE_TRACEME: Operation not permitted
+strace: attach: ptrace(PTRACE_ATTACH, 1): Operation not permitted
+ ```
+ - Для устранения ошибки изменил версию образа докер на latest - strace/agent_daemonset.yml
+ - Применить изменения `kubectl apply -f strace/agent_daemonset.yml
+ - Проверил трассировку
+```bash
+bash-5.0# strace -c -p1
+strace: Process 1 attached
+Handling connection for 10048
+```
+### iptables-tailer
+ - Установил kube-iptables-tailer и необходимые для него сервис аккаунт, роль и биндинг
+ - Установил тестовое приложение netperf-operator
+ - Добавил сетевую потилику calico
+ - Посмотрел логи calico на воркер-ноде
+ - Создал DaemonSet iptables-tailer.yaml и создали SA iptables-tailer-sa.yaml.
+ - Повторил тесты. Событий с ошибками нет.
+ 
