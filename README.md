@@ -184,60 +184,123 @@ Handling connection for 10048
  - Создал DaemonSet iptables-tailer.yaml и создали SA iptables-tailer-sa.yaml.
  - Повторил тесты. Событий с ошибками нет.
 
-## Домашнее задание № 10
-### В процессе сделано:
- - Инсталляция с Helm2 c tiller
- - Инсталляция с Helm2 с helm-tiller
- - Helm3
- - jsonnet
- - kastomize
+## Домашнее задание №6
 
-### Helm2 + tiller
-```bash
-kubectl apply -f kubernetes-templating/cert-manager/01-tiller-cert-manager-rb.yml
-helm init --service-account=tiller
-helm version
-```
-### Ingress
-```bash
-helm upgrade --install nginx-ingress stable/nginx-ingress --wait --namespace=nginx-ingress --version=1.11.1
-```
-### Certmanager
-```bash
-kubectl apply -f kubernetes-templating/cert-manager/01-tiller-cert-manager-rb.yml
-helm init --tiller-namespace cert-manager --service-account tiller-cert-manager
-```
-### Chartmuseum
-```bash
-kubectl get service -n nginx-ingress
-helm plugin install https://github.com/rimusz/helm-tiller
-helm tiller run helm upgrade --install chartmuseum stable/chartmuseum --wait --namespace=chartmuseum --version=2.3.2 -f chartmuseum/values.yml
-helm list
-helm tiller run helm list
-helm delete --purge chartmuseum
-export HELM_TILLER_STORAGE=configmap
-helm upgrade --install chartmuseum stable/chartmuseum --wait --namespace=chartmuseum --version=2.3.2 -f kubernetes-templating/chartmuseum/values.yaml
-```
-### Helm3
-```bash
-helm3 upgrade --install harbor harbor/harbor --wait \
---namespace=harbor \
---version=1.1.2 \
--f kubernetes-templating/harbor/values.yaml
-```
-### Socks-shop
-```bash
-helm upgrade --install socks-shop kubernetes-templating/socks-shop --wait --atomic
-```
+### Выполнено ДЗ №6
+Создаем кластер кубернетес в minikube
+ - [X] основное задание
+ - [ ] задание со *
 
-### kubecfg
-```bash
-kubecfg show services.jsonnet
-kubecfg update services.jsonnet
+## В процессе сделано:
+ - Создан оператор CRD с MySQL
+ - Создан контейнер и запакован в образ
+
+## Как запустить
+# Создаем CRD + CR
 ```
-### kustomize
-```bash
-kubectl apply -k kubernetes-templating/kustomize/overlays/socks-shop-prod
+kubectl apply -f kubernetes-operators/deploy/crd.yml 
+kubectl apply -f kubernetes-operators/deploy/cr.yml 
+```
+# Проверяем результат
+```
+kubectl get crd
+
+NAME                   CREATED AT
+mysqls.otus.homework   2019-12-08T11:50:26Z
+
+kubectl get mysqls.otus.homework
+NAME             AGE
+mysql-instance   21s
+
+kubectl describe mysqls.otus.homework mysql-instance
+Name:         mysql-instance
+Namespace:    default
+Labels:       <none>
+Annotations:  kubectl.kubernetes.io/last-applied-configuration:
+                {"apiVersion":"otus.homework/v1","kind":"MySQL","metadata":{"annotations":{},"name":"mysql-instance","namespace":"default"},"spec":{"datab...
+API Version:  otus.homework/v1
+Kind:         MySQL
+Metadata:
+  Creation Timestamp:  2019-12-08T11:50:34Z
+  Generation:          1
+  Resource Version:    806
+  Self Link:           /apis/otus.homework/v1/namespaces/default/mysqls/mysql-instance
+  UID:                 ed5b5797-8bcb-4772-a4ee-3ffe3de7ca3b
+Spec:
+  Database:      otus-database
+  Image:         mysql:5.7
+  Password:      otuspassword
+  storage_size:  1Gi
+Events:          <none>
 ```
 
+# Собираем образ и пушим его в докерхаб
+```
+docker build . -t maks123/mysql-operator:v0.1
+docker push maks123/mysql-operator:v0.1
+```
+# Применяем манифесты
+```
+kubectl apply -f kubernetes-operators/deploy/service-account.yml
+kubectl apply -f kubernetes-operators/deploy/role.yml
+kubectl apply -f kubernetes-operators/deploy/ClusterRoleBinding.yml
+kubectl apply -f kubernetes-operators/deploy/deploy-operator.yml
+```
+## Как проверить
+# Заполняем данные
+```
+export MYSQLPOD=$(kubectl get pods -l app=mysql-instance -o jsonpath="{.items[*].metadata.name}")
+kubectl exec -it $MYSQLPOD -- mysql -u root -potuspassword -e "CREATE TABLE test ( id smallint unsigned not null auto_increment, name varchar(20) not null, constraint pk_example primary key (id) );" otus-database
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "INSERT INTO test ( id, name ) VALUES ( null, 'some data' );" otus-database
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "INSERT INTO test ( id, name ) VALUES ( null, 'some data-2' );" otus-database
+```
+
+# Смотрим содержание таблицы
+```
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "select * from test;" otus-database
+mysql: [Warning] Using a password on the command line interface can be insecure.
++----+-------------+
+| id | name        |
++----+-------------+
+|  1 | some data   |
+|  2 | some data-2 |
++----+-------------+
+```
+
+```
+kubectl delete mysqls.otus.homework mysql-instance
+
+kubectl get jobs
+NAME                        COMPLETIONS   DURATION   AGE
+backup-mysql-instance-job   1/1           2s         2m7s
+```
+```
+kubectl apply -f ./deploy/cr.yml
+export MYSQLPOD=$(kubectl get pods -l app=mysql-instance -o jsonpath="{.items[*].metadata.name}")
+
+kubectl get jobs
+NAME                         COMPLETIONS   DURATION   AGE
+backup-mysql-instance-job    1/1           2s         3m27s
+restore-mysql-instance-job   1/1           45s        56s
+
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "select * from test;" otus-database
+mysql: [Warning] Using a password on the command line interface can be insecure.
++----+-------------+
+| id | name        |
++----+-------------+
+|  1 | some data   |
+|  2 | some data-2 |
++----+-------------+
+```
+
+## Завершаем работу
+
+# Удаление:
+```
+kubectl delete mysqls.otus.homework mysql-instance
+kubectl delete deployments.apps mysql-instance
+kubectl delete pvc mysql-instance-pvc 
+kubectl delete pv mysql-instance-pv
+kubectl delete svc mysql-instance
+```
 
