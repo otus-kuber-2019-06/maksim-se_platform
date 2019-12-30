@@ -183,10 +183,10 @@ Handling connection for 10048
  - Посмотрел логи calico на воркер-ноде
  - Создал DaemonSet iptables-tailer.yaml и создали SA iptables-tailer-sa.yaml.
  - Повторил тесты. Событий с ошибками нет.
- 
+
 ## Домашнее задание №6
 
-### Выполнено ДЗ №7
+### Выполнено ДЗ №6
 Создаем кластер кубернетес в minikube
  - [X] основное задание
  - [ ] задание со *
@@ -302,5 +302,61 @@ kubectl delete deployments.apps mysql-instance
 kubectl delete pvc mysql-instance-pvc 
 kubectl delete pv mysql-instance-pv
 kubectl delete svc mysql-instance
+```
+
+## Домашнее задание № 10
+### В процессе сделано:
+ - Инсталляция с Helm2 c tiller
+ - Инсталляция с Helm2 с helm-tiller
+ - Helm3
+ - jsonnet
+ - kastomize
+
+### Helm2 + tiller
+```bash
+kubectl apply -f kubernetes-templating/cert-manager/01-tiller-cert-manager-rb.yml
+helm init --service-account=tiller
+helm version
+```
+### Ingress
+```bash
+helm upgrade --install nginx-ingress stable/nginx-ingress --wait --namespace=nginx-ingress --version=1.11.1
+```
+### Certmanager
+```bash
+kubectl apply -f kubernetes-templating/cert-manager/01-tiller-cert-manager-rb.yml
+helm init --tiller-namespace cert-manager --service-account tiller-cert-manager
+```
+### Chartmuseum
+```bash
+kubectl get service -n nginx-ingress
+helm plugin install https://github.com/rimusz/helm-tiller
+helm tiller run helm upgrade --install chartmuseum stable/chartmuseum --wait --namespace=chartmuseum --version=2.3.2 -f chartmuseum/values.yml
+helm list
+helm tiller run helm list
+helm delete --purge chartmuseum
+export HELM_TILLER_STORAGE=configmap
+helm upgrade --install chartmuseum stable/chartmuseum --wait --namespace=chartmuseum --version=2.3.2 -f kubernetes-templating/chartmuseum/values.yaml
+```
+### Helm3
+```bash
+helm3 upgrade --install harbor harbor/harbor --wait \
+--namespace=harbor \
+--version=1.1.2 \
+-f kubernetes-templating/harbor/values.yaml
+```
+### Socks-shop
+```bash
+helm upgrade --install socks-shop kubernetes-templating/socks-shop --wait --atomic
+```
+
+### kubecfg
+```bash
+kubecfg show services.jsonnet
+kubecfg update services.jsonnet
+```
+### kustomize
+```bash
+kubectl apply -k kubernetes-templating/kustomize/overlays/socks-shop-prod
 ```
 
